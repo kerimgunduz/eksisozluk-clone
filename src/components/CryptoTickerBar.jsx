@@ -103,7 +103,17 @@ function CryptoTickerItem({ coin, selected, onCoinSelect }) {
           aria-label={`${coin.name} entrylerini aç`}
         >
           <div className="crypto-ticker-meta">
-            <span className="crypto-ticker-symbol">{coin.symbol.toUpperCase()}</span>
+            {coin.image ? (
+              <img
+                src={coin.image}
+                alt=""
+                className="crypto-ticker-icon"
+                width={16}
+                height={16}
+              />
+            ) : (
+              <span className="crypto-ticker-icon-fallback">{coin.symbol.toUpperCase()}</span>
+            )}
             <span className="crypto-ticker-price">{formatCryptoPrice(coin.current_price)}</span>
             <span
               className={`crypto-ticker-change ${changeUp ? "crypto-ticker-change--up" : "crypto-ticker-change--down"}`}
