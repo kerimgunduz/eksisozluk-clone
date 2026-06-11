@@ -212,7 +212,7 @@ export default function Header({
           <Theme
             variant="switch"
             size="sm"
-            themes={["light", "dark"]}
+            themes={["dark", "light"]}
             className="header-theme-switch"
           />
         </div>
