@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect, Suspense, lazy, useMemo } from "react";
 import { useScrollRouting } from "./hooks/useScrollRouting";
 import useCryptoMarket from "./hooks/useCryptoMarket";
 import Header from "./components/Header";
@@ -6,7 +6,7 @@ import CryptoTickerBar from "./components/CryptoTickerBar";
 import Navigation from "./components/Navigation";
 import Sidebar from "./components/Sidebar";
 import MainContent from "./components/MainContent";
-import SideGutterBackground from "./components/SideGutterBackground";
+import DeferredSideGutter from "./components/DeferredSideGutter";
 import {
   defaultFeedEntries,
   getTopicEntries,
@@ -17,7 +17,16 @@ import {
   getCryptoTopicTitle,
   getCryptoIdFromTitle,
   isCryptoTopic,
-} from "./data/cryptoTopics";
+} from "./data/cryptoTopicsMeta";
+
+const AuthPage = lazy(() => import("./components/AuthPage"));
+
+function createEmptyTopic(title) {
+  return {
+    title,
+    entries: [],
+  };
+}
 
 export default function App() {
   const [selectedTopic, setSelectedTopic] = useState(
@@ -28,12 +37,53 @@ export default function App() {
   const [activeNav, setActiveNav] = useState("gündem");
   const [likedEntries, setLikedEntries] = useState(new Set());
   const [searchResult, setSearchResult] = useState(null);
+  const [cryptoTopicData, setCryptoTopicData] = useState(null);
+  const [loadedCryptoCoinId, setLoadedCryptoCoinId] = useState(null);
   const sidebarRef = useRef(null);
   const { coins, loading: cryptoLoading, isLive: cryptoLive } = useCryptoMarket();
 
   useScrollRouting(sidebarRef);
 
-  const topicData = searchResult || getTopicEntries(selectedTopic);
+  const activeCryptoCoinId = useMemo(() => {
+    if (searchResult) return null;
+    return getCryptoIdFromTitle(selectedTopic);
+  }, [searchResult, selectedTopic]);
+
+  useEffect(() => {
+    if (!activeCryptoCoinId) return undefined;
+
+    let cancelled = false;
+
+    import("./data/cryptoTopicsEntries.js").then((mod) => {
+      if (cancelled) return;
+      setCryptoTopicData(mod.getCryptoTopicData(activeCryptoCoinId));
+      setLoadedCryptoCoinId(activeCryptoCoinId);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [activeCryptoCoinId]);
+
+  const topicData = useMemo(() => {
+    if (searchResult) return searchResult;
+
+    if (activeCryptoCoinId) {
+      if (loadedCryptoCoinId === activeCryptoCoinId && cryptoTopicData) {
+        return cryptoTopicData;
+      }
+      return createEmptyTopic(selectedTopic);
+    }
+
+    return getTopicEntries(selectedTopic);
+  }, [
+    searchResult,
+    selectedTopic,
+    activeCryptoCoinId,
+    loadedCryptoCoinId,
+    cryptoTopicData,
+  ]);
+
   const activeCryptoCoin =
     selectedCryptoId != null
       ? coins.find((coin) => coin.id === selectedCryptoId) ?? null
@@ -157,9 +207,16 @@ export default function App() {
     });
   }, []);
 
+  const authView =
+    mode === "login" || mode === "register" ? (
+      <Suspense fallback={<main className="main-content" aria-hidden="true" />}>
+        <AuthPage type={mode} onSwitch={setMode} />
+      </Suspense>
+    ) : null;
+
   return (
     <div className="app">
-      <SideGutterBackground />
+      <DeferredSideGutter />
       <div className="site-header">
         <Header
           onSearch={handleSearch}
@@ -184,17 +241,18 @@ export default function App() {
           selectedTopic={selectedTopic}
           onTopicSelect={handleTopicSelect}
         />
-        <MainContent
-          mode={mode}
-          topicData={topicData}
-          feedEntries={defaultFeedEntries}
-          onTopicClick={handleTopicSelect}
-          likedEntries={likedEntries}
-          onLike={handleLike}
-          onAuthSwitch={setMode}
-          cryptoCoin={activeCryptoCoin}
-          isCryptoTopic={isCryptoTopic(selectedTopic)}
-        />
+        {authView ?? (
+          <MainContent
+            mode={mode}
+            topicData={topicData}
+            feedEntries={defaultFeedEntries}
+            onTopicClick={handleTopicSelect}
+            likedEntries={likedEntries}
+            onLike={handleLike}
+            cryptoCoin={activeCryptoCoin}
+            isCryptoTopic={isCryptoTopic(selectedTopic)}
+          />
+        )}
       </div>
     </div>
   );

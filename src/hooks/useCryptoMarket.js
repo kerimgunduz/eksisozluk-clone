@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { CRYPTO_COIN_IDS } from "../data/cryptoTopics";
+import { CRYPTO_COIN_IDS } from "../data/cryptoTopicsMeta";
 
 const COIN_IDS = CRYPTO_COIN_IDS;
 
@@ -288,11 +288,24 @@ export default function useCryptoMarket() {
       }
     }
 
-    fetchMarket();
+    const scheduleFetch = () => {
+      if (cancelled) return;
+      fetchMarket();
+    };
+
+    const idleId =
+      typeof requestIdleCallback === "function"
+        ? requestIdleCallback(scheduleFetch, { timeout: 1500 })
+        : null;
+    const timeoutId = idleId == null ? setTimeout(scheduleFetch, 150) : null;
     const interval = setInterval(fetchMarket, REFRESH_MS);
 
     return () => {
       cancelled = true;
+      if (idleId != null && typeof cancelIdleCallback === "function") {
+        cancelIdleCallback(idleId);
+      }
+      if (timeoutId != null) clearTimeout(timeoutId);
       clearInterval(interval);
     };
   }, []);

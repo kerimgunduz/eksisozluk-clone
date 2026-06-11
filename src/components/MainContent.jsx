@@ -1,7 +1,18 @@
+import { Suspense, lazy } from "react";
 import EntryItem from "./EntryItem";
-import AuthPage from "./AuthPage";
 import SiteFooter from "./SiteFooter";
-import CryptoTopicHeader from "./CryptoTopicHeader";
+
+const CryptoTopicHeader = lazy(() => import("./CryptoTopicHeader"));
+
+function TopicLoadingState({ title }) {
+  return (
+    <div className="topic-loading" aria-busy="true" aria-label={`${title} yükleniyor`}>
+      <div className="topic-loading__bar" />
+      <div className="topic-loading__bar topic-loading__bar--short" />
+      <div className="topic-loading__bar" />
+    </div>
+  );
+}
 
 export default function MainContent({
   mode,
@@ -10,14 +21,9 @@ export default function MainContent({
   onTopicClick,
   likedEntries,
   onLike,
-  onAuthSwitch,
   cryptoCoin,
   isCryptoTopic,
 }) {
-  if (mode === "login" || mode === "register") {
-    return <AuthPage type={mode} onSwitch={onAuthSwitch} />;
-  }
-
   if (mode === "feed") {
     return (
       <main className="main-content">
@@ -41,30 +47,38 @@ export default function MainContent({
     );
   }
 
+  const entriesLoading = isCryptoTopic && topicData.entries.length === 0;
+
   return (
     <main className={`main-content${isCryptoTopic ? " main-content--crypto" : ""}`}>
       {isCryptoTopic ? (
         <>
           {cryptoCoin ? (
-            <CryptoTopicHeader
-              coin={cryptoCoin}
-              topicTitle={topicData.title}
-              entryCount={topicData.entries.length}
-            />
+            <Suspense fallback={<TopicLoadingState title={topicData.title} />}>
+              <CryptoTopicHeader
+                coin={cryptoCoin}
+                topicTitle={topicData.title}
+                entryCount={topicData.entries.length || null}
+              />
+            </Suspense>
           ) : (
             <div className="topic-header">
               <h1 className="topic-page-title">{topicData.title}</h1>
             </div>
           )}
           <div className="crypto-topic-entries">
-            {topicData.entries.map((entry) => (
-              <EntryItem
-                key={entry.id}
-                entry={entry}
-                liked={likedEntries.has(entry.id)}
-                onLike={onLike}
-              />
-            ))}
+            {entriesLoading ? (
+              <TopicLoadingState title={topicData.title} />
+            ) : (
+              topicData.entries.map((entry) => (
+                <EntryItem
+                  key={entry.id}
+                  entry={entry}
+                  liked={likedEntries.has(entry.id)}
+                  onLike={onLike}
+                />
+              ))
+            )}
           </div>
         </>
       ) : (

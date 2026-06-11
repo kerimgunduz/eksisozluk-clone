@@ -1160,7 +1160,7 @@ const cryptoTopicsData = Object.fromEntries(
   ])
 );
 
-const fileContent = `export const CRYPTO_COIN_IDS = [
+const metaContent = `export const CRYPTO_COIN_IDS = [
   "bitcoin",
   "ethereum",
   "solana",
@@ -1194,21 +1194,17 @@ export function getCryptoIdFromTitle(title) {
 export function isCryptoTopic(title) {
   return getCryptoIdFromTitle(title) != null;
 }
+`;
 
-export const cryptoTopicsData = ${JSON.stringify(cryptoTopicsData, null, 2)};
+const entriesContent = `export const cryptoTopicsData = ${JSON.stringify(cryptoTopicsData, null, 2)};
 
 export function getCryptoTopicData(coinId) {
   return cryptoTopicsData[coinId] ?? null;
 }
-
-export function getCryptoTopicByTitle(title) {
-  const coinId = getCryptoIdFromTitle(title);
-  if (!coinId) return null;
-  return cryptoTopicsData[coinId];
-}
 `;
 
-writeFileSync(join(root, "src/data/cryptoTopics.js"), fileContent);
+writeFileSync(join(root, "src/data/cryptoTopicsMeta.js"), metaContent);
+writeFileSync(join(root, "src/data/cryptoTopicsEntries.js"), entriesContent);
 
 for (const [key, value] of Object.entries(cryptoTopicsData)) {
   console.log(`${key}: ${value.entries.length} entries`);

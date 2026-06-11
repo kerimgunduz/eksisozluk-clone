@@ -110,6 +110,9 @@ function CryptoTickerItem({ coin, selected, onCoinSelect }) {
                 className="crypto-ticker-icon"
                 width={16}
                 height={16}
+                loading="lazy"
+                decoding="async"
+                fetchPriority="low"
               />
             ) : (
               <span className="crypto-ticker-icon-fallback">{coin.symbol.toUpperCase()}</span>

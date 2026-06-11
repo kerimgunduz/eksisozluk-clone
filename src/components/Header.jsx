@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { SearchIcon, ChevronDownIcon, CalendarIcon } from "./Icons";
 import Logo from "./Logo";
-import { Theme } from "@/components/ui/theme";
+import ThemeSwitch from "./ThemeSwitch";
 import { searchSortOptions } from "../data/mockData";
 
 const initialAdvancedSearch = {
@@ -209,12 +209,7 @@ export default function Header({
           <button type="button" className="header-link" onClick={onRegister}>
             kayıt ol
           </button>
-          <Theme
-            variant="switch"
-            size="sm"
-            themes={["dark", "light"]}
-            className="header-theme-switch"
-          />
+          <ThemeSwitch className="header-theme-switch" />
         </div>
       </div>
     </header>

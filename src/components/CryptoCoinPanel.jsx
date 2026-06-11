@@ -39,6 +39,8 @@ export default function CryptoCoinPanel({ coin, variant = "compact" }) {
             className="crypto-detail-icon"
             width={isSticky ? 36 : 28}
             height={isSticky ? 36 : 28}
+            loading="lazy"
+            decoding="async"
           />
         ) : (
           <span className="crypto-detail-icon-fallback">{coin.symbol.toUpperCase()}</span>
