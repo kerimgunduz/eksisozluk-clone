@@ -1,3 +1,5 @@
+import { getCryptoTopicByTitle } from "./cryptoTopics";
+
 export const gundemPersonalizeTags = [
   { label: "#spor", active: true },
   { label: "#siyaset", active: true },
@@ -341,6 +343,11 @@ export const defaultFeedEntries = [
 ];
 
 export function getTopicEntries(title) {
+  const cryptoTopic = getCryptoTopicByTitle(title);
+  if (cryptoTopic) {
+    return cryptoTopic;
+  }
+
   if (topicsData[title]) {
     return topicsData[title];
   }

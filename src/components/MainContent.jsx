@@ -1,6 +1,7 @@
 import EntryItem from "./EntryItem";
 import AuthPage from "./AuthPage";
 import SiteFooter from "./SiteFooter";
+import CryptoTopicHeader from "./CryptoTopicHeader";
 
 export default function MainContent({
   mode,
@@ -10,6 +11,8 @@ export default function MainContent({
   likedEntries,
   onLike,
   onAuthSwitch,
+  cryptoCoin,
+  isCryptoTopic,
 }) {
   if (mode === "login" || mode === "register") {
     return <AuthPage type={mode} onSwitch={onAuthSwitch} />;
@@ -39,21 +42,49 @@ export default function MainContent({
   }
 
   return (
-    <main className="main-content">
-      <div className="topic-header">
-        <h1 className="topic-page-title">{topicData.title}</h1>
-        <a href="#" className="follow-link" onClick={(e) => e.preventDefault()}>
-          Takip et: <strong>@sozluk</strong>
-        </a>
-      </div>
-      {topicData.entries.map((entry) => (
-        <EntryItem
-          key={entry.id}
-          entry={entry}
-          liked={likedEntries.has(entry.id)}
-          onLike={onLike}
-        />
-      ))}
+    <main className={`main-content${isCryptoTopic ? " main-content--crypto" : ""}`}>
+      {isCryptoTopic ? (
+        <>
+          {cryptoCoin ? (
+            <CryptoTopicHeader
+              coin={cryptoCoin}
+              topicTitle={topicData.title}
+              entryCount={topicData.entries.length}
+            />
+          ) : (
+            <div className="topic-header">
+              <h1 className="topic-page-title">{topicData.title}</h1>
+            </div>
+          )}
+          <div className="crypto-topic-entries">
+            {topicData.entries.map((entry) => (
+              <EntryItem
+                key={entry.id}
+                entry={entry}
+                liked={likedEntries.has(entry.id)}
+                onLike={onLike}
+              />
+            ))}
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="topic-header">
+            <h1 className="topic-page-title">{topicData.title}</h1>
+            <a href="#" className="follow-link" onClick={(e) => e.preventDefault()}>
+              Takip et: <strong>@sozluk</strong>
+            </a>
+          </div>
+          {topicData.entries.map((entry) => (
+            <EntryItem
+              key={entry.id}
+              entry={entry}
+              liked={likedEntries.has(entry.id)}
+              onLike={onLike}
+            />
+          ))}
+        </>
+      )}
       <SiteFooter />
     </main>
   );
