@@ -478,20 +478,17 @@ ul {
   left: 0;
   right: 0;
   z-index: 99;
-  padding: 0 5px;
   background: var(--bg-page);
 }
 
 .crypto-ticker-bar {
   display: flex;
   align-items: stretch;
-  width: var(--layout-width);
-  max-width: var(--layout-max);
-  margin: 0 auto;
+  width: 100%;
   height: var(--crypto-bar-height);
   background: var(--bg-elevated);
-  border: 1px solid var(--border-light);
-  border-radius: 6px;
+  border-top: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-light);
   overflow: visible;
 }
 
