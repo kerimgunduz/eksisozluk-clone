@@ -1,4 +1,6 @@
 import EntryItem from "./EntryItem";
+import AuthPage from "./AuthPage";
+import SiteFooter from "./SiteFooter";
 
 export default function MainContent({
   mode,
@@ -7,7 +9,12 @@ export default function MainContent({
   onTopicClick,
   likedEntries,
   onLike,
+  onAuthSwitch,
 }) {
+  if (mode === "login" || mode === "register") {
+    return <AuthPage type={mode} onSwitch={onAuthSwitch} />;
+  }
+
   if (mode === "feed") {
     return (
       <main className="main-content">
@@ -26,6 +33,7 @@ export default function MainContent({
             onLike={onLike}
           />
         ))}
+        <SiteFooter />
       </main>
     );
   }
@@ -46,6 +54,7 @@ export default function MainContent({
           onLike={onLike}
         />
       ))}
+      <SiteFooter />
     </main>
   );
 }

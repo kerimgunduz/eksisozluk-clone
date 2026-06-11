@@ -1,3 +1,12 @@
+export const gundemPersonalizeTags = [
+  { label: "#spor", active: true },
+  { label: "#siyaset", active: true },
+  { label: "#anket", active: true },
+  { label: "#ilişkiler", active: true },
+  { label: "#ekşi sözlük", active: false },
+  { label: "#yetişkin", active: false },
+];
+
 export const gundemTopics = [
   { id: 1, title: "beyaz show'da oğuzhan koç'a yapılan şaka", count: 166 },
   { id: 2, title: "nesrin cavadzade", count: 70 },
@@ -34,10 +43,47 @@ export const navLinks = [
   { label: "ekşi şeyler", href: "#", icon: "seyler" },
 ];
 
+export const siteFooterLinks = [
+  "iletişim",
+  "şeffaflık raporları",
+  "sözlük kuralları",
+  "reklam",
+  "kariyer",
+  "kullanım koşulları",
+  "gizlilik politikamız",
+  "sss",
+  "istatistikler",
+  "sub-etha",
+  "instagram",
+  "x",
+  "bluesky",
+  "facebook",
+];
+
+export const moreMenuItems = [
+  "tarihte bugün",
+  "#dünya kupası",
+  "#kripto",
+  "#siyaset",
+  "#seyahat",
+  "#müzik",
+  "#tv",
+  "#haber",
+  "#bilim",
+  "başıboşlar",
+  "tüm kanallar",
+];
+
 export const searchTypes = [
   { value: "baslik", label: "başlık" },
   { value: "yazar", label: "yazar" },
   { value: "entry", label: "entry" },
+];
+
+export const searchSortOptions = [
+  { value: "desc", label: "yeniden eskiye" },
+  { value: "asc", label: "eskiden yeniye" },
+  { value: "score", label: "puana göre" },
 ];
 
 export const topicsData = {
